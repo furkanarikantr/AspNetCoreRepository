@@ -1,0 +1,39 @@
+﻿@model ListModel
+
+<div class="list-container">
+    @* <h3>Cities</h3> *@
+    @* <ul class="list">
+    <li>London</li>
+    <li>Berlin</li>
+    <li>Stockholm</li>
+    <li>Paris</li>
+    <li>Milano</li>
+    <li>Barcelona</li>
+    <li>Madrid</li>
+    <li>Vienna</li>
+    <li>Roma</li>
+    <li>Napoli</li>
+    </ul> *@
+
+
+    @* @{
+        ViewBag.ListTitle = "Updated!";
+    }
+
+    <h3>@ViewBag.ListTitle</h3>
+    <ul class="list">
+        @foreach (string item in ViewBag.ListItems)
+        {
+            <li>@item</li>
+        }
+    </ul> *@
+
+
+    <h3>@Model.ListTitle</h3>
+    <ul class="list">
+        @foreach (string item in Model.ListItems)
+        {
+            <li>@item</li>
+        }
+    </ul>
+</div>

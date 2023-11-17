@@ -1,0 +1,22 @@
+﻿@{
+    Layout = "~/Views/Shared/_MasterLayout.cshtml";
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewData["Title"]</title>
+    <link href="~/stylesheet.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="flex full-size-height">
+        <div class="flex-1 grey-back">
+            sidebar
+        </div>
+        <div class="flex-3 white-back">
+            @RenderBody()
+        </div>
+    </div>
+</body>
+</html>

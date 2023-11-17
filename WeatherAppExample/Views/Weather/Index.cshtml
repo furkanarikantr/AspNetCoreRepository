@@ -1,0 +1,16 @@
+﻿@model List<CityWeather>
+
+@{
+    ViewBag.Title = "Weather";
+}
+
+<div class="margin-top-200 margin-left">
+    <div class="flex">
+        @foreach (var city in Model)
+        {
+            //<partial name="_CityPartial" model="city" />
+
+            @await Component.InvokeAsync("City", new { city = city })
+        }
+    </div>
+</div>

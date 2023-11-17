@@ -1,0 +1,128 @@
+﻿@model List<Person>
+
+@{
+    //Razor Code Block
+
+    //string appTitle = "Asp.Net Core Repo";
+
+    //Person person = new Person() { PersonName = "Furkan", DateOfBirth = null /* Convert.ToDateTime("1997-06-24") */, PersonGender = Gender.Male };
+
+    //List<Person>? people = (List<Person>?)ViewData["people"];
+
+    // List<Person> people = new List<Person>()
+    // {
+    //     new Person()
+    //     {
+    //         PersonName ="Furkan",
+    //         DateOfBirth = Convert.ToDateTime("1997-06-24"),
+    //         PersonGender = Gender.Male
+    //     },
+    //     new Person()
+    //     {
+    //         PersonName ="Beyza",
+    //         DateOfBirth = Convert.ToDateTime("1999-03-04"),
+    //         PersonGender = Gender.Male
+    //     }
+    // };
+}
+
+
+@functions {
+    //Razor Local Function
+    double? GetAge(DateTime? dateOfBirth)
+    {
+        if (dateOfBirth != null)
+        {
+            return Math.Round((DateTime.Now - dateOfBirth.Value).TotalDays / 365.25);
+        }
+        else
+        {
+            return null;
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <!--Razor Expression-->
+    @* <title>@ViewData["appTitle"]</title> *@
+    <title>@ViewBag.appTitle</title>
+    <meta charset="utf-8" />
+    <link href="~/StyleSheet.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="page-content">
+        <h1>Persons</h1>
+
+        @foreach (Person person in Model)
+        {
+            <div class="box float-left w-50">
+                <h3>@person.PersonName</h3>
+                <table class="table w-100">
+                    <tbody>
+                        <tr>
+                            <td>Gender</td>
+                            <td>@person.PersonName</td>
+                        </tr>
+                        <tr>
+                            <td>Date of Birth</td>
+                            <td>@person.DateOfBirth.Value.ToString("MM/dd/yyyy")</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <a href="/person-details/@person.PersonName">Details!</a>
+                </div> 
+            </div>
+        }
+        <div>
+            <a href="/person-with-product">Person with Product!</a>
+        </div>
+    </div>
+
+
+    @* @for (int index = 0; index < people.Count; index++)
+    {
+    <div>
+    <span>@people[index].PersonName</span>
+    <span>, </span>
+    <span>@people[index].PersonGender</span>
+    @if (@people[index].DateOfBirth != null)
+    {
+    <span>@people[index].DateOfBirth.Value.ToString("MM/dd/yyyy")</span>
+    }
+    </div>
+    } *@
+
+    @* <h3>Hello @person.PersonName</h3>
+
+    @if (person.DateOfBirth.HasValue)
+    {
+    double age = Math.Round((DateTime.Now - person.DateOfBirth).Value.TotalDays / 365.25);
+    <h5>Your Age : @age</h5>
+    }else
+    {
+    <h5>Date of Birth is unknown.</h5>
+    }
+
+    @switch (person.PersonGender)
+    {
+    case Gender.Male:
+    <p>November 19 is International Men's Day!</p>
+    ;
+    break;
+
+    case Gender.Female:
+    <p>March 8 is International Women's Day!</p>
+    ;
+    break;
+
+    case Gender.Other:
+    <p>March 31 is International Transgender's Day!</p>
+    ;
+    break;
+    } *@
+
+</body>
+</html>

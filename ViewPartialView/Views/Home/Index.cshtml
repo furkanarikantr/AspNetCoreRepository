@@ -1,0 +1,77 @@
+﻿@{
+
+}
+
+<h1>Home</h1>
+
+<button class="button blue-back" type="button" id="button-load">Load Programming Languages</button>
+
+<div class="box" id="programming-langues-content">
+
+</div>
+
+<script>
+    document.querySelector("#button-load").addEventListener("click", async function () {
+        var response = await fetch("programming-languages");
+        var languages = await response.text();
+
+        document.querySelector("#programming-langues-content").innerHTML = languages;
+    });
+</script>
+
+@* @{
+    ListModel listModel = new ListModel();
+    listModel.ListTitle = "Countries";
+    listModel.ListItems = new List<string>()
+    {
+        "USA",
+        "UK",
+        "Germany",
+        "Italy",
+        "Spain",
+        "France",
+        "Holland",
+        "Monaco",
+    };
+}
+
+<div class="box">
+    <partial name="_CitiesListPartialView" model="listModel"></partial>
+</div> *@
+
+@{
+    // ViewBag.ListTitle = "Countries";
+    // ViewBag.ListItems = new List<string>()
+    //         {
+    //             "USA",
+    //             "UK",
+    //             "Germany",
+    //             "Italy",
+    //             "Spain",
+    //             "France",
+    //             "Holland",
+    //         };
+
+    // var myViewBag = new ViewDataDictionary(ViewData);
+
+    // myViewBag["ListTitle"] = "Countries";
+    // myViewBag["ListItems"] = new List<string>()
+    //         {
+    //             "USA",
+    //             "UK",
+    //             "Germany",
+    //             "Italy",
+    //             "Spain",
+    //             "France",
+    //             "Holland",
+    //             "Monaco",
+    //         };
+
+}
+
+@* <h3>List Title in View : @ViewBag.ListTitle</h3>
+
+<div class="box">
+    <partial name="_CitiesListPartialView" view-data="myViewBag"></partial>
+</div>
+ *@
