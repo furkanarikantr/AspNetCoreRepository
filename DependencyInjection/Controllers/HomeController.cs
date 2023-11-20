@@ -7,9 +7,12 @@ namespace DependencyInjection.Controllers
     public class HomeController : Controller
     {
         //private readonly CitiesService _citiesService;
-        private readonly ICitiesService _citiesService;
+        private readonly ICitiesService _citiesService1;
+        
+        private readonly ICitiesService _citiesService2;
+        private readonly ICitiesService _citiesService3;
 
-        public HomeController(ICitiesService citiesService)
+        public HomeController(ICitiesService citiesService1, ICitiesService citiesService2, ICitiesService citiesService3)
         {
             /*
             _citiesService = new CitiesService();
@@ -25,13 +28,33 @@ namespace DependencyInjection.Controllers
                 Bu sorunların çözümü, Dependency Inversion Principle (DIP)
             */
 
-            _citiesService = citiesService;
+            _citiesService1 = citiesService1; //Object from IoC container.
+            _citiesService2 = citiesService2;
+            _citiesService3 = citiesService3;
+
+            /*
+                Transient => Aynı servisin birden çok kullanımı durumu, aynı servisten kullanılan kadar üretir.
+                Scoped => Aynı servisi birden çok kullansak bile, aynı controller içinde olduğumuz için tek servis üretir ve o controller içinde
+                    üretilen tek servis kullanılır.
+                Singleton => Aynı servisi birden çok kullansak bile, uygulama çalışır çalışmaz o servisten bir tane üretilir ve uygulama çalışma
+                    ömrü boyunca o servis kullanılr.
+                
+
+                ** Hangisi ne zaman kullanılmalı ? Tam olarak anlaşılmadı, bakılacak!
+                
+                ** Üretilen bütün servisler IoC Container'da saklanır ve ihtiyaç duyulduğunda oradan alınır.
+            */
         }
 
         [Route("/")]
         public IActionResult Index()
         {
-            List<string> cities = _citiesService.GetCities();
+            List<string> cities = _citiesService1.GetCities();
+
+            ViewBag.InstanceId_CitiesService_1 = _citiesService1.ServiceInstanceId;
+            ViewBag.InstanceId_CitiesService_2 = _citiesService2.ServiceInstanceId;
+            ViewBag.InstanceId_CitiesService_3 = _citiesService3.ServiceInstanceId;
+
             return View(cities);
         }
     }

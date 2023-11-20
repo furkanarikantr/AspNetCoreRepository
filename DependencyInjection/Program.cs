@@ -12,7 +12,8 @@ namespace DependencyInjection
             builder.Services.Add(new ServiceDescriptor(
                 typeof(ICitiesService),
                 typeof(CitiesService),
-                ServiceLifetime.Transient
+                //ServiceLifetime.Transient
+                ServiceLifetime.Scoped
             ));
 
             var app = builder.Build();
