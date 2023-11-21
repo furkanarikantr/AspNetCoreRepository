@@ -2,7 +2,7 @@
 
 namespace Services
 {
-    public class CitiesService : ICitiesService
+    public class CitiesService : ICitiesService, IDisposable
     {
         private List<string> _cities;
 
@@ -25,6 +25,8 @@ namespace Services
                 "Manchester",
                 "Stockholm"
             };
+
+            //Database bağlantısı oluşturma işlemleri
         }
 
         public Guid ServiceInstanceId
@@ -33,6 +35,11 @@ namespace Services
             {
                 return _serviceInstanceId;
             }
+        }
+
+        public void Dispose()
+        {
+            //Veritabanı bağlantısı kapatma işlemleri
         }
 
         public List<string> GetCities()

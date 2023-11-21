@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Autofac;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using ServiceContracts;
 using Services;
 
@@ -8,11 +10,13 @@ namespace DependencyInjection.Controllers
     {
         //private readonly CitiesService _citiesService;
         private readonly ICitiesService _citiesService1;
-        
         private readonly ICitiesService _citiesService2;
         private readonly ICitiesService _citiesService3;
 
-        public HomeController(ICitiesService citiesService1, ICitiesService citiesService2, ICitiesService citiesService3)
+        //private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly ILifetimeScope _lifeTimeScope;
+
+        public HomeController(ICitiesService citiesService1, ICitiesService citiesService2, ICitiesService citiesService3, ILifetimeScope lifeTimeScope/*IServiceScopeFactory serviceScopeFactory*/)
         {
             /*
             _citiesService = new CitiesService();
@@ -31,6 +35,7 @@ namespace DependencyInjection.Controllers
             _citiesService1 = citiesService1; //Object from IoC container.
             _citiesService2 = citiesService2;
             _citiesService3 = citiesService3;
+            _lifeTimeScope = lifeTimeScope;
 
             /*
                 Transient => Aynı servisin birden çok kullanımı durumu, aynı servisten kullanılan kadar üretir.
@@ -54,6 +59,14 @@ namespace DependencyInjection.Controllers
             ViewBag.InstanceId_CitiesService_1 = _citiesService1.ServiceInstanceId;
             ViewBag.InstanceId_CitiesService_2 = _citiesService2.ServiceInstanceId;
             ViewBag.InstanceId_CitiesService_3 = _citiesService3.ServiceInstanceId;
+
+            //using (IServiceScope serviceScope = _serviceScopeFactory.CreateScope())
+            using (ILifetimeScope lifeTimeScope = _lifeTimeScope.BeginLifetimeScope())
+            {
+                //ICitiesService citiesService = serviceScope.ServiceProvider.GetRequiredService<ICitiesService>();
+                ICitiesService citiesService = lifeTimeScope.Resolve<ICitiesService>();
+                ViewBag.InstanceId_CitiesService_InScope = citiesService.ServiceInstanceId;
+            }//Using sonunda servisteki Dispose otomatik olarak çağırılır.
 
             return View(cities);
         }
