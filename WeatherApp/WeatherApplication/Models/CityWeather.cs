@@ -1,4 +1,4 @@
-﻿namespace WeatherAppExample.Models
+﻿namespace WeatherApplication.Models
 {
     public class CityWeather
     {

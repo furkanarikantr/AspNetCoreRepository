@@ -1,4 +1,4 @@
-namespace WeatherAppExample
+namespace WeatherApplication
 {
     public class Program
     {

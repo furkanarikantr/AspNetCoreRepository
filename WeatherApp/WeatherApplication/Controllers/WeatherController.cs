@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WeatherAppExample.Models;
+using WeatherApplication.Models;
 
-namespace WeatherAppExample.Controllers
+namespace WeatherApplication.Controllers
 {
     public class WeatherController : Controller
     {

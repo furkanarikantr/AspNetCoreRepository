@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WeatherAppExample.Models;
+using WeatherApplication.Models;
 
-namespace WeatherAppExample.ViewComponents
+namespace WeatherApplication.ViewComponents
 {
     public class CityViewComponent : ViewComponent
     {
