@@ -1,29 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WeatherApplication.Models;
+using Models;
+using ServiceContracts;
 
 namespace WeatherApplication.Controllers
 {
     public class WeatherController : Controller
     {
-        List<CityWeather> citiesList = new List<CityWeather>()
-            {
-                new CityWeather
-                {
-                    CityUniqueCode = "LDN", CityName = "London", DateAndTime = Convert.ToDateTime("2030-01-01 8:00"),  TemperatureFahrenheit = 33
-                },
-                new CityWeather
-                {
-                    CityUniqueCode = "NYC", CityName = "NewYork", DateAndTime = Convert.ToDateTime("2030-01-01 3:00"),  TemperatureFahrenheit = 60
-                },
-                new CityWeather
-                {
-                    CityUniqueCode = "PAR", CityName = "Paris", DateAndTime = Convert.ToDateTime("2030-01-01 9:00"),  TemperatureFahrenheit = 82
-                }
-            };
+        private readonly IWeatherService _weatherService;
+
+        public WeatherController(IWeatherService weatherService)
+        {
+            _weatherService = weatherService;
+        }
 
         [Route("/")]
         public IActionResult Index()
         {
+            List<CityWeather> citiesList = _weatherService.GetWeatherDetails();
             return View(citiesList);
         }
 
@@ -35,6 +28,7 @@ namespace WeatherApplication.Controllers
                 return View("Index");
             }
 
+            List<CityWeather> citiesList = _weatherService.GetWeatherDetails();
             CityWeather? selectedCity = citiesList.Where(temp => temp.CityUniqueCode == cityCode).FirstOrDefault();
 
             return View(selectedCity);

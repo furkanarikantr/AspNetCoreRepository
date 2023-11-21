@@ -1,3 +1,6 @@
+using ServiceContracts;
+using Services;
+
 namespace WeatherApplication
 {
     public class Program
@@ -5,6 +8,7 @@ namespace WeatherApplication
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddTransient<IWeatherService, WeatherService>();
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
