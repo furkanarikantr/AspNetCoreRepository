@@ -8,7 +8,7 @@ namespace ServiceContracts
 {
     public interface ICitiesService
     {
-        Guid ServiceInstanceId { get; } 
+        Guid ServiceInstanceId { get; }
         List<string> GetCities();
     }
 }
