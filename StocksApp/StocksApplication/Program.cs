@@ -1,3 +1,5 @@
+using StocksApplication.Services;
+
 namespace StocksApplication
 {
     public class Program
@@ -7,7 +9,8 @@ namespace StocksApplication
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddControllersWithViews();
             builder.Services.AddHttpClient();
-
+            builder.Services.AddScoped<FinnhubService>();
+            
             var app = builder.Build();
 
             app.UseStaticFiles();
