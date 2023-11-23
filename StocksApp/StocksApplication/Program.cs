@@ -1,6 +1,4 @@
-using Configuration.AppSettingModels;
-
-namespace Configuration
+namespace StocksApplication
 {
     public class Program
     {
@@ -8,11 +6,7 @@ namespace Configuration
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddControllersWithViews();
-            builder.Services.Configure<WeatherApiOptions>(builder.Configuration.GetSection("weatherapi"));
-            builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
-            {
-                config.AddJsonFile("MyConfig.json", optional: true, reloadOnChange: true);
-            });
+            builder.Services.AddHttpClient();
 
             var app = builder.Build();
 

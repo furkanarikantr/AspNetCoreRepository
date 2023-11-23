@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="~/stylesheet.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <div class="page-content">
+            <div class="margin-bottom">
+                <div class="flex" id="top-bar-div">
+                    <div class="flex-1" id="app-title-div">
+                        <h1 class="app-title"><i class="fa-solid fa-money-bill-trend-up"></i> Stocks</h1>
+                    </div>
+
+                    <div class="flex-1">
+                        Login
+                    </div>
+                </div>
+
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+</body>
+</html>
