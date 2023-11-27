@@ -1,6 +1,6 @@
 ﻿using Entities;
 using ServiceContracts;
-using ServiceContracts.DTO;
+using ServiceContracts.DTOs.CountryDto;
 using Services;
 
 namespace CrudTests

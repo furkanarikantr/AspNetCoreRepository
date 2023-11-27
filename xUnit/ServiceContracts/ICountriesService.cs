@@ -1,4 +1,4 @@
-﻿using ServiceContracts.DTO;
+﻿using ServiceContracts.DTOs.CountryDto;
 
 namespace ServiceContracts
 {

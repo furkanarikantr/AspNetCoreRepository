@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ServiceContracts.DTO
+namespace ServiceContracts.DTOs.CountryDto
 {
     public class CountryAddRequest
     {
