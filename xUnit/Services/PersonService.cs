@@ -1,8 +1,10 @@
 ﻿using Entities;
 using ServiceContracts;
 using ServiceContracts.DTOs.PersonDto;
+using Services.Helpers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,10 +29,7 @@ namespace Services
                 throw new ArgumentNullException(nameof(personAddRequest));
             }
 
-            if (string.IsNullOrEmpty(personAddRequest.PersonName))
-            {
-                throw new ArgumentException("PersonName can't be blank.");
-            }
+            ValidationHelper.ModelValidation(personAddRequest);
 
             Person person = personAddRequest.ToPerson();
             person.PersonId = Guid.NewGuid();
@@ -46,7 +45,7 @@ namespace Services
 
         public List<PersonResponse> GetAllPerson()
         {
-            throw new NotImplementedException();
+            throw new ArgumentException();
         }
     }
 }
