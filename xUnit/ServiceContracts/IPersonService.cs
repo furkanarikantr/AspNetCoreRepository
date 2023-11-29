@@ -1,4 +1,5 @@
 ﻿using ServiceContracts.DTOs.PersonDto;
+using ServiceContracts.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,7 @@ namespace ServiceContracts
 
         List<PersonResponse> GetAllPerson();
         PersonResponse? GetPersonByPersonId(Guid? personId);
+        List<PersonResponse> GetFilteredPersons(string? searchBy, string? searchString);
+        List<PersonResponse> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SortOrderOption sortOrder);
     }
 }
