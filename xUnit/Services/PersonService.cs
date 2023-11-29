@@ -45,7 +45,24 @@ namespace Services
 
         public List<PersonResponse> GetAllPerson()
         {
-            throw new ArgumentException();
+            return _persons.Select(person => person.ToPersonResponse()).ToList();
+        }
+
+        public PersonResponse? GetPersonByPersonId(Guid? personId)
+        {
+            if (personId == null)
+            {
+                return null;
+            }
+
+            Person? person = _persons.FirstOrDefault(select => select.PersonId == personId);
+
+            if (person == null)
+            {
+                return null;
+            }
+
+            return person.ToPersonResponse();
         }
     }
 }
