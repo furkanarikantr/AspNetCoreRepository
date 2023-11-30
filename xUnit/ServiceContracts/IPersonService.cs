@@ -11,6 +11,8 @@ namespace ServiceContracts
     public interface IPersonService
     {
         PersonResponse AddPerson(PersonAddRequest personAddRequest);
+        PersonResponse UpdatePerson(PersonUpdateRequest personUpdateRequest);
+        bool DeletePerson(Guid? personId);
 
         List<PersonResponse> GetAllPerson();
         PersonResponse? GetPersonByPersonId(Guid? personId);

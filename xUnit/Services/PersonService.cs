@@ -45,6 +45,24 @@ namespace Services
             return personResponse;
         }
 
+        public bool DeletePerson(Guid? personId)
+        {
+            if (personId == null)
+            {
+                throw new ArgumentNullException(nameof(personId));
+            }
+
+            Person? matchedPerson = _persons.FirstOrDefault(temp => temp.PersonId == personId);
+            
+            if (matchedPerson == null)
+            {
+                return false;
+            }
+
+            _persons.Remove(matchedPerson);
+            return true;
+        }
+
         public List<PersonResponse> GetAllPerson()
         {
             return _persons.Select(person => person.ToPersonResponse()).ToList();
@@ -192,6 +210,33 @@ namespace Services
 
             return sortedList.ToList();
             */
+        }
+
+        public PersonResponse UpdatePerson(PersonUpdateRequest personUpdateRequest)
+        {
+            if (personUpdateRequest == null)
+            {
+                throw new ArgumentNullException(nameof(personUpdateRequest));
+            }
+
+            ValidationHelper.ModelValidation(personUpdateRequest);
+
+            //PersonResponse? personResponseFromGet = GetPersonByPersonId(personUpdateRequest.PersonId);
+            Person? matchedPerson = _persons.FirstOrDefault(temp => temp.PersonId  == personUpdateRequest.PersonId);
+            if (matchedPerson == null)
+            {
+                throw new ArgumentException("Given person id doesn't exist!");
+            }
+
+            matchedPerson.PersonName = personUpdateRequest.PersonName;
+            matchedPerson.Email = personUpdateRequest.Email;
+            matchedPerson.Address = personUpdateRequest.Address;
+            matchedPerson.Gender = personUpdateRequest.Gender.ToString();
+            matchedPerson.DateOfBirth = personUpdateRequest.DateOfBirth;
+            matchedPerson.CountryId = personUpdateRequest.CountryId;
+            matchedPerson.ReceiveNewsLetters = personUpdateRequest.ReceiveNewsLetters;
+
+            return matchedPerson.ToPersonResponse();
         }
     }
 }
