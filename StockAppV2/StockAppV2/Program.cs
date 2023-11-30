@@ -10,6 +10,7 @@ namespace StockAppV2
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<IFinnhubService, FinnhubService>();
+            builder.Services.AddSingleton<IStocksService, StocksService>();
             builder.Services.Configure<TradingOptions>(builder.Configuration.GetSection("TradingOptions"));
             builder.Services.AddHttpClient();
             

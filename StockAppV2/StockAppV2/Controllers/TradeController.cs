@@ -5,17 +5,19 @@ using StockAppV2.Models;
 
 namespace StockAppV2.Controllers
 {
-    public class HomeController : Controller
+    public class TradeController : Controller
     {
         private readonly TradingOptions _tradingOptions;
         private readonly IConfiguration _configuration;
         private readonly IFinnhubService _finnhubService;
+        private readonly IStocksService _stocksService;
 
-        public HomeController(IOptions<TradingOptions> tradingOptions,IConfiguration configuration ,IFinnhubService finnhubService)
+        public TradeController(IOptions<TradingOptions> tradingOptions,IConfiguration configuration ,IFinnhubService finnhubService, IStocksService stocksService)
         {
             _tradingOptions = tradingOptions.Value;
             _configuration = configuration;
             _finnhubService = finnhubService;
+            _stocksService = stocksService;
         }
 
         [Route("/")]
