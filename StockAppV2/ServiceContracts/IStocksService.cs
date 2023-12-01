@@ -11,9 +11,9 @@ namespace ServiceContracts
     public interface IStocksService
     {
         BuyOrderResponse CreateBuyOrder(BuyOrderRequest? buyOrderRequest);
-        BuyOrderResponse GetBuyOrders();
+        List<BuyOrderResponse> GetBuyOrders();
 
         SellOrderResponse CreateSellOrder(SellOrderRequest? sellOrderRequest);
-        SellOrderResponse GetSellOrders();
+        List<SellOrderResponse> GetSellOrders();
     }
 }

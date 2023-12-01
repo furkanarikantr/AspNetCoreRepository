@@ -42,17 +42,30 @@ namespace Services
 
         public SellOrderResponse CreateSellOrder(SellOrderRequest? sellOrderRequest)
         {
-            throw new NotImplementedException();
+            if (sellOrderRequest == null)
+            {
+                throw new ArgumentNullException(nameof(sellOrderRequest)); 
+            }
+
+            ValidationHelper.ModelValidation(sellOrderRequest);
+
+            SellOrder sellOrder = sellOrderRequest.ToSellOrder();
+
+            sellOrder.SellOrderId = Guid.NewGuid();
+            
+            _sellOrders.Add(sellOrder);
+
+            return sellOrder.ToSellOrderResponse();
         }
 
-        public BuyOrderResponse GetBuyOrders()
+        public List<BuyOrderResponse> GetBuyOrders()
         {
-            throw new NotImplementedException();
+            return _buyOrders.OrderBy(temp => temp.DateAndTimeOfOrder).Select(temp => temp.ToBuyOrderResponse()).ToList();
         }
 
-        public SellOrderResponse GetSellOrders()
+        public List<SellOrderResponse> GetSellOrders()
         {
-            throw new NotImplementedException();
+            return _sellOrders.OrderBy(temp => temp.DateAndTimeOfOrder).Select(temp => temp.ToSellOrderResponse()).ToList();
         }
     }
 }

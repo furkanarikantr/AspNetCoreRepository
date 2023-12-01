@@ -4,6 +4,7 @@ namespace Entities
 {
     public class BuyOrder
     {
+        [Key]
         public Guid BuyOrderId { get; set; }
 
         [Required(ErrorMessage = "Stock Symbol can't be null or empty!")]

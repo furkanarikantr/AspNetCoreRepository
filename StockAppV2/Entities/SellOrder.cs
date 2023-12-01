@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Entities
 {
@@ -23,7 +18,7 @@ namespace Entities
         [Range(1, 1000, ErrorMessage = "You can sell maximum of 1000 shares in single order. Minimum is 1.")]
         public uint Quantity { get; set; }
 
-        [Range(1, 1000, ErrorMessage = "The maximum price of stock is 1000. Minimum is 1")]
+        [Range(1, 1000, ErrorMessage = "The maximum price of stock is 1000. Minimum is 1.")]
         public double Price { get; set; }
     }
 }
