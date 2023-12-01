@@ -1,3 +1,6 @@
+using ServiceContracts;
+using Services;
+
 namespace CrudExample
 {
     public class Program
@@ -6,6 +9,9 @@ namespace CrudExample
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddSingleton<ICountriesService, CountriesService>();
+            builder.Services.AddSingleton<IPersonService, PersonService>();
 
             var app = builder.Build();
 
