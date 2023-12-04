@@ -1,6 +1,9 @@
-﻿@if (ViewBag.CurrentSortBy == ViewBag.ColumnName && ViewBag.CurrentSortOrder == SortOrderOption.ASC.ToString())
+﻿@addTagHelper "*, Microsoft.AspNetCore.Mvc.TagHelpers"
+
+@if (ViewBag.CurrentSortBy == ViewBag.ColumnName && ViewBag.CurrentSortOrder == SortOrderOption.ASC.ToString())
 {
     <th>
+        @* <a href="~/persons/index?searchBy=@(ViewBag.CurrentSearchBy)&searchString=@(ViewBag.CurrentSearchString)&sortBy=@(ViewBag.ColumnName)&sortOrder=@(nameof(SortOrderOption.DESC))">@(ViewBag.DisplayName)</a> *@
         <a href="~/persons/index?searchBy=@(ViewBag.CurrentSearchBy)&searchString=@(ViewBag.CurrentSearchString)&sortBy=@(ViewBag.ColumnName)&sortOrder=@(nameof(SortOrderOption.DESC))">@(ViewBag.DisplayName)</a>
         <i class="fa-solid fa-sort-up"></i>
     </th>
