@@ -47,6 +47,13 @@ namespace Services
             }
         }
 
+        private PersonResponse ConvertPersonToPersonResponse(Person person)
+        {
+            PersonResponse personResponse = person.ToPersonResponse();
+            personResponse.Country = _countriesService.GetCountryByCountryId(person.CountryId)?.CountryName;
+            return personResponse;
+        }
+
         public PersonResponse AddPerson(PersonAddRequest? personAddRequest)
         {
             if (personAddRequest == null)
@@ -62,8 +69,10 @@ namespace Services
             _persons.Add(person);
 
             //Convert fonksiyonuna al.
-            PersonResponse personResponse = person.ToPersonResponse();
-            personResponse.Country = _countriesService.GetCountryByCountryId(personResponse.CountryId)?.CountryName;
+            //PersonResponse personResponse = person.ToPersonResponse();
+            //personResponse.Country = _countriesService.GetCountryByCountryId(personResponse.CountryId)?.CountryName;
+
+            PersonResponse personResponse = ConvertPersonToPersonResponse(person);
 
             return personResponse;
         }
@@ -88,7 +97,7 @@ namespace Services
 
         public List<PersonResponse> GetAllPerson()
         {
-            return _persons.Select(person => person.ToPersonResponse()).ToList();
+            return _persons.Select(person => ConvertPersonToPersonResponse(person)).ToList();
         }
 
         public List<PersonResponse> GetFilteredPersons(string? searchBy, string? searchString)
@@ -116,8 +125,12 @@ namespace Services
                     break;
 
                 case nameof(PersonResponse.Gender):
+                    if (searchString == "male" || searchString == "Male")
+                    {
+                        matchedPersons = allPersons.Where(temp => (!string.IsNullOrEmpty(temp.Gender) ? temp.Gender.ToLower() == searchString.ToLower() : true)).ToList();
+                        break;
+                    }
                     matchedPersons = allPersons.Where(temp => (!string.IsNullOrEmpty(temp.Gender) ? temp.Gender.Contains(searchString, StringComparison.OrdinalIgnoreCase) : true)).ToList();
-                    //matchedPersons = allPersons.Where(temp => (!string.IsNullOrEmpty(temp.Gender) ? temp.Gender.ToLower() == searchString.ToLower() : true)).ToList();
                     break;
 
                 case nameof(PersonResponse.CountryId):
@@ -163,7 +176,7 @@ namespace Services
                 return null;
             }
 
-            return person.ToPersonResponse();
+            return ConvertPersonToPersonResponse(person);
         }
 
         public List<PersonResponse> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SortOrderOption sortOrder)
@@ -260,7 +273,7 @@ namespace Services
             matchedPerson.CountryId = personUpdateRequest.CountryId;
             matchedPerson.ReceiveNewsLetters = personUpdateRequest.ReceiveNewsLetters;
 
-            return matchedPerson.ToPersonResponse();
+            return ConvertPersonToPersonResponse(matchedPerson);
         }
     }
 }
