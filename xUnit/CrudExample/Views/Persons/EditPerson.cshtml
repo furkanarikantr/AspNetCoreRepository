@@ -1,24 +1,23 @@
-﻿@model PersonAddRequest
+﻿@model PersonUpdateRequest
 @{
-    ViewData["Title"] = "CreatePerson";
+    ViewData["Title"] = "EditPerson";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <a asp-controller="Persons" asp-action="Index" class="link-hover">Back to Persons List</a>
 
-<h2>Create Person</h2>
+<h2>Edit Person</h2>
 
 <div class="center-box">
-    <form asp-controller="Persons" asp-action="Create" method="post">
+    <form asp-controller="Persons" asp-action="EditPerson" method="post">
+        <input type="hidden" asp-for="PersonId" />
 
         @*PersonName*@
         <div class="form-field flex">
             <div class="w-25">
-                @* <label for="PersonName" class="form-label pt">Person Name</label> *@
                 <label asp-for="PersonName" class="form-label pt">Person Name</label>
             </div>
             <div class="flex-1">
-                @* <input type="text" id="PersonName" name="PersonName" class="form-input" /> *@
                 <input asp-for="PersonName" class="form-input" />
                 <span asp-validation-for="PersonName" class="text-red"></span>
             </div>
@@ -30,7 +29,7 @@
                 <label asp-for="Email" class="form-label pt">Email</label>
             </div>
             <div class="flex-1">
-                <input asp-for="Email" type="email" class="form-input" />
+                <input asp-for="Email" class="form-input" />
                 <span asp-validation-for="Email" class="text-red"></span>
             </div>
         </div>
@@ -41,15 +40,15 @@
                 <label asp-for="DateOfBirth" class="form-label pt">Date of Birth</label>
             </div>
             <div class="flex-1">
-                <input asp-for="DateOfBirth" type="date" class="form-input" />
-                <span asp-validation-for="DateOfBirth"></span>
+                <input asp-for="DateOfBirth" class="form-input" />
+                <span asp-validation-for="DateOfBirth" class="text-red"></span>
             </div>
         </div>
 
         @*Gender*@
         <div class="form-field flex">
             <div class="w-25">
-                <label asp-for="Gender" class="form-label">Gender</label>
+                <label class="form-label">Gender</label>
             </div>
             <div class="flex-1">
                 @{
@@ -57,10 +56,10 @@
                 }
                 @foreach (string gender in genders)
                 {
-                    <input asp-for="Gender" type="radio" value="@gender" />
-                    <label asp-for="@gender">@gender</label>
+                    <input type="radio" asp-for="Gender" value="@gender" />
+                    <label for="@gender">@gender</label>
                 }
-                <span asp-validation-for="Gender"></span>
+                <span asp-validation-for="Gender" class="text-red"></span>
             </div>
         </div>
 
@@ -70,18 +69,10 @@
                 <label class="form-label" asp-for="CountryId">Country</label>
             </div>
             <div class="flex-1">
-                @* <select name="CountryId" id="CountryId" class="form-input">
-                <option value="">Please Select</option>
-                @foreach (CountryResponse country in ViewBag.Countries)
-                {
-                <option value="@country.CountryId">@country.CountryName</option>
-                }
-                </select> *@
-
-                <select asp-for="CountryId" asp-items="@ViewBag.Countries" class="form-input">
+                <select asp-for="CountryId" class="form-input" asp-items="@ViewBag.Countries">
                     <option value="">Please Select</option>
                 </select>
-                <span asp-validation-for="CountryId"></span>
+                <span asp-validation-for="CountryId" class="text-red"></span>
             </div>
         </div>
 
@@ -91,8 +82,8 @@
                 <label asp-for="Address" class="form-label pt">Address</label>
             </div>
             <div class="flex-1">
-                <textarea asp-for="Address" name="Address" class="form-input"></textarea>
-                <span asp-validation-for="Address"></span>
+                <textarea asp-for="Address" class="form-input"></textarea>
+                <span asp-validation-for="Address" class="text-red"></span>
             </div>
         </div>
 
@@ -101,9 +92,9 @@
             <div class="w-25">
             </div>
             <div class="flex-1">
-                <input asp-for="ReceiveNewsLetters" type="checkbox" value="true" />
+                <input asp-for="ReceiveNewsLetters" value="true" />
                 <label asp-for="ReceiveNewsLetters" class="form-label">Receive News Letters</label>
-                <span asp-validation-for="ReceiveNewsLetters"></span>
+                <span asp-validation-for="ReceiveNewsLetters" class="text-red"></span>
             </div>
         </div>
 
@@ -112,9 +103,9 @@
             <div class="w-25">
             </div>
             <div class="flex-1">
-                <button class="button button-green-back">Create</button>
+                <button class="button button-green-back">Update</button>
 
-                <div asp-validation-summary="All"></div>
+                <div asp-validation-summary="All" class="text-red"></div>
 
                 @if (ViewBag.Errors != null)
                 {
