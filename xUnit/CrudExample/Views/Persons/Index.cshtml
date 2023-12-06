@@ -96,8 +96,9 @@
                     <td style="width:10%">@person.Country</td>
                     <td style="width:15%">@person.Address</td>
                     <td style="width:10%">@person.ReceiveNewsLetters</td>
-                    <td style="width:20%">
-                        <a asp-controller="Persons" asp-action="EditPerson" asp-route-personId="@person.PersonId">Edit</a>
+                    <td style="width:10%">
+                        <a asp-controller="Persons" asp-action="EditPerson" asp-route-personid="@person.PersonId">Edit</a>
+                        <a asp-controller="Persons" asp-action="DeletePerson" asp-route-personid="@person.PersonId">Delete</a>
                     </td>
                 </tr>
             }
