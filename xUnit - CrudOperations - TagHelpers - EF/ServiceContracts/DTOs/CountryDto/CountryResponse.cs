@@ -29,6 +29,11 @@ namespace ServiceContracts.DTOs.CountryDto
 
             return CountryId == country_to_compare.CountryId && CountryName == country_to_compare.CountryName;
         }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 
     //Country objesini CountryResponse objesine çeviriyoruz.
