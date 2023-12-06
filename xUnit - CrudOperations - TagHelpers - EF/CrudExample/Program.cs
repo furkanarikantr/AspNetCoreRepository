@@ -16,9 +16,9 @@ namespace CrudExample
             builder.Services.AddSingleton<IPersonService, PersonService>();
             builder.Services.AddDbContext<PersonsDbContext>(options =>
             {
-                options.UseSqlServer();
+                options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]);
             });
-
+              
             var app = builder.Build();
 
             if (builder.Environment.IsDevelopment())
