@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTOs.CountryDto;
 using ServiceContracts.DTOs.PersonDto;
@@ -19,10 +20,10 @@ namespace CrudTests
         private readonly ICountriesService _countriesService;
         private readonly ITestOutputHelper _testOutputHelper;
 
-        public PersonServiceTest(ITestOutputHelper testOutputHelper)
+        public PersonServiceTest(ITestOutputHelper testOutputHelper, ICountriesService countriesService)
         {
-            _personService = new PersonService(false);
-            _countriesService = new CountriesService(false);
+            _countriesService = new CountriesService(new PersonsDbContext(new DbContextOptionsBuilder().Options));
+            _personService = new PersonService(new PersonsDbContext(new DbContextOptionsBuilder().Options), _countriesService);
             _testOutputHelper = testOutputHelper;
         }
 

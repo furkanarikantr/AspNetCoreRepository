@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTOs.CountryDto;
 using Services;
@@ -11,7 +12,7 @@ namespace CrudTests
 
         public CountriesServiceTest()
         {
-            _countriesService = new CountriesService(false);
+            _countriesService = new CountriesService(new PersonsDbContext(new DbContextOptionsBuilder<PersonsDbContext>().Options));
         }
 
         #region AddCountry
