@@ -25,7 +25,7 @@ namespace CrudTests
             _countriesService = new CountriesService(new PersonsDbContext(new DbContextOptionsBuilder().Options));
             _personService = new PersonService(new PersonsDbContext(new DbContextOptionsBuilder().Options), _countriesService);
             _testOutputHelper = testOutputHelper;
-        }
+        }  
 
         #region AddPerson
         [Fact]

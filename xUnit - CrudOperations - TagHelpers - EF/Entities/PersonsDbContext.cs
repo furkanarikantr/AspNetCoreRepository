@@ -48,6 +48,12 @@ namespace Entities
                 modelBuilder.Entity<Person>().HasData(person);
             }
         }
+
+        //Migration ile veritabanına eklediğimiz StoreProcedure'u çağırıyoruz.
+        public List<Person> sp_GetAllPersons()
+        {
+            return Persons.FromSqlRaw("EXECUTE [dbo].[GetAllPersons]").ToList();
+        }
     }
 }
 
@@ -56,4 +62,12 @@ namespace Entities
     Veritabanını Ef ile oluşturmak, güncellemek ve yönetmek için uygulama katmanına Entityframework.Desing nuget paketi ekle.
     Paketlerden sonra veritabanını oluşturmak ve eklemek için => Add-Migration Initial
     Veritabanı oluşturma işlemleri bittikten sonra Update-Database komutu ile veritabanı güncelleyip işlemleri gerçekleştiriyoruz.
+*/
+
+/*
+    Birden fazla veya karmaşık veritabanı işlemi gerçekleştirmek istediğimizde EF'de StoredProcedure kullanılır.
+        Performansı arttırır.
+        Güvenliği arttırır
+        Ağ trafiğini yormadan çalışırlar
+    Insert-Update-Delete işlemleri için DbContext.Database.ExecuteSqlRaw kullanılır.
 */
