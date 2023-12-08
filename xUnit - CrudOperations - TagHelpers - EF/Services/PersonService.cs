@@ -45,8 +45,13 @@ namespace Services
             person.PersonId = Guid.NewGuid();
 
             //_persons.Add(person);
-            _db.Persons.Add(person);
-            _db.SaveChanges();
+
+            //EntityFramework ile sql'siz ekleme.
+            //_db.Persons.Add(person);
+            //_db.SaveChanges();
+
+            //Entityframework ile storedprocedure kullanarak sql ile ekleme.
+            _db.sp_InsertPerson(person);
 
             //Convert fonksiyonuna al.
             //PersonResponse personResponse = person.ToPersonResponse();
@@ -83,7 +88,6 @@ namespace Services
         {
             //return _persons.Select(person => ConvertPersonToPersonResponse(person)).ToList();
             //return _db.Persons.ToList().Select(person => ConvertPersonToPersonResponse(person)).ToList();
-
             return _db.sp_GetAllPersons().Select(temp => ConvertPersonToPersonResponse(temp)).ToList();
         }
 
