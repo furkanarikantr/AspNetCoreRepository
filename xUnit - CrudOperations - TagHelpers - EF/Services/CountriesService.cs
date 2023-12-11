@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTOs.CountryDto;
 
@@ -77,6 +78,8 @@ namespace Services
 
         public List<CountryResponse> GetAllCountries()
         {
+            //var countries = _db.Countries.Include("Persons").ToList();
+
             //return _countries.Select(country => country.ToCountryResponse()).ToList();
             return _db.Countries.Select(country => country.ToCountryResponse()).ToList();
         }

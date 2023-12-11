@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTOs.PersonDto;
 using ServiceContracts.Enums;
@@ -25,12 +26,14 @@ namespace Services
             _countriesService = countriesService;
         }
 
-        private PersonResponse ConvertPersonToPersonResponse(Person person)
-        {
-            PersonResponse personResponse = person.ToPersonResponse();
-            personResponse.Country = _countriesService.GetCountryByCountryId(person.CountryId)?.CountryName;
-            return personResponse;
-        }
+        //Artık gerek kalmadı, çünkü kendimiz eklediğimiz CountryName'i ilişkisel veritabanı kullanarak ekleyebiliyoruz.
+        //private PersonResponse ConvertPersonToPersonResponse(Person person)
+        //{
+        //    PersonResponse personResponse = person.ToPersonResponse();
+        //    //personResponse.Country = _countriesService.GetCountryByCountryId(person.CountryId)?.CountryName;
+        //    personResponse.Country = person.Country?.CountryName;
+        //    return personResponse;
+        //}
 
         public PersonResponse AddPerson(PersonAddRequest? personAddRequest)
         {
@@ -47,17 +50,18 @@ namespace Services
             //_persons.Add(person);
 
             //EntityFramework ile sql'siz ekleme.
-            //_db.Persons.Add(person);
-            //_db.SaveChanges();
+            _db.Persons.Add(person);
+            _db.SaveChanges();
 
             //Entityframework ile storedprocedure kullanarak sql ile ekleme.
-            _db.sp_InsertPerson(person);
+            //_db.sp_InsertPerson(person);
 
             //Convert fonksiyonuna al.
             //PersonResponse personResponse = person.ToPersonResponse();
             //personResponse.Country = _countriesService.GetCountryByCountryId(personResponse.CountryId)?.CountryName;
 
-            PersonResponse personResponse = ConvertPersonToPersonResponse(person);
+            //PersonResponse personResponse = ConvertPersonToPersonResponse(person);
+            PersonResponse personResponse = person.ToPersonResponse();
 
             return personResponse;
         }
@@ -86,9 +90,14 @@ namespace Services
 
         public List<PersonResponse> GetAllPerson()
         {
+            var persons = _db.Persons.Include("Country").ToList();
+
             //return _persons.Select(person => ConvertPersonToPersonResponse(person)).ToList();
             //return _db.Persons.ToList().Select(person => ConvertPersonToPersonResponse(person)).ToList();
-            return _db.sp_GetAllPersons().Select(temp => ConvertPersonToPersonResponse(temp)).ToList();
+            //return _db.sp_GetAllPersons().Select(temp => ConvertPersonToPersonResponse(temp)).ToList();
+
+            //return persons.ToList().Select(person => ConvertPersonToPersonResponse(person)).ToList();
+            return persons.ToList().Select(person => person.ToPersonResponse()).ToList();
         }
 
         public List<PersonResponse> GetFilteredPersons(string? searchBy, string? searchString)
@@ -161,14 +170,15 @@ namespace Services
             }
 
             //Person? person = _persons.FirstOrDefault(select => select.PersonId == personId);
-            Person? person = _db.Persons.FirstOrDefault(select => select.PersonId == personId);
+            Person? person = _db.Persons.Include("Country").FirstOrDefault(select => select.PersonId == personId);
 
             if (person == null)
             {
                 return null;
             }
 
-            return ConvertPersonToPersonResponse(person);
+            //return ConvertPersonToPersonResponse(person);
+            return person.ToPersonResponse();
         }
 
         public List<PersonResponse> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SortOrderOption sortOrder)
@@ -267,7 +277,8 @@ namespace Services
             matchedPerson.ReceiveNewsLetters = personUpdateRequest.ReceiveNewsLetters;
             _db.SaveChanges();
 
-            return ConvertPersonToPersonResponse(matchedPerson);
+            //return ConvertPersonToPersonResponse(matchedPerson);
+            return matchedPerson.ToPersonResponse();
         }
     }
 }

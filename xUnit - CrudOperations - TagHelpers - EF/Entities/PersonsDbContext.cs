@@ -50,9 +50,22 @@ namespace Entities
 
             //Fluent API
             modelBuilder.Entity<Person>().Property(temp => temp.TIN)
-                .HasColumnName("TaxIdentificationNumber")
+                .HasColumnName("TIN")
                 .HasColumnType("varchar(8)")
-                .HasDefaultValue("ABC12345");
+                .HasDefaultValue("ABC12345")
+                ;
+
+            //TIN sütunundaki değerlerin benzersiz olmasını sağlar.
+            //modelBuilder.Entity<Person>().HasIndex(temp => temp.TIN).IsUnique();
+
+            //Burada CHK_TIN diye bir işlem tanımlanır. TIN uzunluğu 8 olmayan değerleri kabul etmez, 8 uzunluğunda olan değerleri kabul eder.
+            modelBuilder.Entity<Person>().HasCheckConstraint("CHK_TIN", "len(TIN) = 8");
+
+            //Tablo İlişkilendirme
+            //modelBuilder.Entity<Person>(temp =>
+            //{
+            //    temp.HasOne<Country>(c => c.Country).WithMany(p => p.Persons).HasForeignKey(p => p.CountryId);
+            //});
         }
 
         //Migration ile veritabanına eklediğimiz StoreProcedure'u çağırıyoruz.
