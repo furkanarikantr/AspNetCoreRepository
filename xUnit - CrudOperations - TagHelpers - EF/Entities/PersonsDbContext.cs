@@ -27,7 +27,7 @@ namespace Entities
         {
             base.OnModelCreating(modelBuilder);
 
-            //Country'lerden oluşacak tablo adını Countries yapıyoruz. Bunu yazmasaydık, yukarıdan yine Countries olucaktı.
+            //Tablo isimleri ile projemizde Entity isimlerinin eşleşmesini yapıyoruz.
             modelBuilder.Entity<Country>().ToTable("Countries");
             modelBuilder.Entity<Person>().ToTable("Persons");
 
@@ -39,8 +39,7 @@ namespace Entities
             foreach (Country country in countries)
             {
                 modelBuilder.Entity<Country>().HasData(country);
-            }            
-            //Seed to persons
+            }
             string personsJson = System.IO.File.ReadAllText("persons.json");
             List<Person> persons = System.Text.Json.JsonSerializer.Deserialize<List<Person>>(personsJson);
 
@@ -48,6 +47,12 @@ namespace Entities
             {
                 modelBuilder.Entity<Person>().HasData(person);
             }
+
+            //Fluent API
+            modelBuilder.Entity<Person>().Property(temp => temp.TIN)
+                .HasColumnName("TaxIdentificationNumber")
+                .HasColumnType("varchar(8)")
+                .HasDefaultValue("ABC12345");
         }
 
         //Migration ile veritabanına eklediğimiz StoreProcedure'u çağırıyoruz.
@@ -67,11 +72,12 @@ namespace Entities
                 new SqlParameter("@Gender", person.Gender),
                 new SqlParameter("@CountryId", person.CountryId),
                 new SqlParameter("@Address", person.Address),
-                new SqlParameter("@ReceiveNewsLetters", person.ReceiveNewsLetters)
+                new SqlParameter("@ReceiveNewsLetters", person.ReceiveNewsLetters),
+                new SqlParameter("@TIN", person.TIN)
             };
 
             return Database.ExecuteSqlRaw("EXECUTE [dbo].[InsertPerson] @PersonId, @PersonName, @Email, @DateOfBirth, @Gender, @CountryId, " +
-                "@Address, @ReceiveNewsLetters", parameters);
+                "@Address, @ReceiveNewsLetters, @TIN", parameters);
         }
     }
 }
@@ -89,4 +95,21 @@ namespace Entities
         Güvenliği arttırır
         Ağ trafiğini yormadan çalışırlar
     Insert-Update-Delete işlemleri için DbContext.Database.ExecuteSqlRaw kullanılır.
+*/
+
+/*
+    
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            //Tablo isimleri ile projemizde Entity isimlerinin eşleşmesini yapıyoruz.
+            modelBuilder.Entity<ModelClass>( ).ToTable("table_name", schema: "schema_name");
+ 
+            //Tablo isimleri ile projemizde Entity isimlerinin eşleşmesini görüntü için eşliyoruz. ??
+            modelBuilder.Entity<ModelClass>( ).ToView("view_name", schema: "schema_name");
+ 
+            //DbContext'teki veritabanının tüm tablolar için geçerli varsayılan şemayı belirtir.
+            modelBuilder.HasDefaultSchema("schema_name");
+        }
+    
+ 
 */

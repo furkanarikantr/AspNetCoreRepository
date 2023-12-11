@@ -29,5 +29,8 @@ namespace Entities
         public string? Address { get; set; }
 
         public bool ReceiveNewsLetters { get; set; }
+
+        //Text Identification  Number
+        public string? TIN { get; set; }
     }
 }
