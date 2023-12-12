@@ -35,7 +35,7 @@ namespace Services
         //    return personResponse;
         //}
 
-        public PersonResponse AddPerson(PersonAddRequest? personAddRequest)
+        public async Task<PersonResponse> AddPerson(PersonAddRequest? personAddRequest)
         {
             if (personAddRequest == null)
             {
@@ -50,8 +50,8 @@ namespace Services
             //_persons.Add(person);
 
             //EntityFramework ile sql'siz ekleme.
-            _db.Persons.Add(person);
-            _db.SaveChanges();
+            await _db.Persons.AddAsync(person);
+            await _db.SaveChangesAsync();
 
             //Entityframework ile storedprocedure kullanarak sql ile ekleme.
             //_db.sp_InsertPerson(person);
@@ -66,7 +66,7 @@ namespace Services
             return personResponse;
         }
 
-        public bool DeletePerson(Guid? personId)
+        public async Task<bool> DeletePerson(Guid? personId)
         {
             if (personId == null)
             {
@@ -74,7 +74,7 @@ namespace Services
             }
 
             //Person? matchedPerson = _persons.FirstOrDefault(temp => temp.PersonId == personId);
-            Person? matchedPerson = _db.Persons.FirstOrDefault(temp => temp.PersonId == personId);
+            Person? matchedPerson = await _db.Persons.FirstOrDefaultAsync(temp => temp.PersonId == personId);
 
             if (matchedPerson == null)
             {
@@ -83,14 +83,14 @@ namespace Services
 
             //_persons.Remove(matchedPerson);
             _db.Persons.Remove(matchedPerson);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
             return true;
         }
 
-        public List<PersonResponse> GetAllPerson()
+        public async Task<List<PersonResponse>> GetAllPerson()
         {
-            var persons = _db.Persons.Include("Country").ToList();
+            var persons = await _db.Persons.Include("Country").ToListAsync();
 
             //return _persons.Select(person => ConvertPersonToPersonResponse(person)).ToList();
             //return _db.Persons.ToList().Select(person => ConvertPersonToPersonResponse(person)).ToList();
@@ -100,15 +100,15 @@ namespace Services
             return persons.ToList().Select(person => person.ToPersonResponse()).ToList();
         }
 
-        public List<PersonResponse> GetFilteredPersons(string? searchBy, string? searchString)
+        public async Task<List<PersonResponse>> GetFilteredPersons(string? searchBy, string? searchString)
         {
+            List<PersonResponse> allPersons = await GetAllPerson();
+            List<PersonResponse> matchedPersons = allPersons;
+
             if (string.IsNullOrEmpty(searchBy) || string.IsNullOrEmpty(searchString))
             {
-                return GetAllPerson();
+                return matchedPersons;
             }
-
-            List<PersonResponse> allPersons = GetAllPerson();
-            List<PersonResponse> matchedPersons = allPersons;
 
             switch (searchBy)
             {
@@ -162,7 +162,7 @@ namespace Services
             */
         }
 
-        public PersonResponse? GetPersonByPersonId(Guid? personId)
+        public async Task<PersonResponse?> GetPersonByPersonId(Guid? personId)
         {
             if (personId == null)
             {
@@ -170,7 +170,7 @@ namespace Services
             }
 
             //Person? person = _persons.FirstOrDefault(select => select.PersonId == personId);
-            Person? person = _db.Persons.Include("Country").FirstOrDefault(select => select.PersonId == personId);
+            Person? person = await _db.Persons.Include("Country").FirstOrDefaultAsync(select => select.PersonId == personId);
 
             if (person == null)
             {
@@ -181,7 +181,7 @@ namespace Services
             return person.ToPersonResponse();
         }
 
-        public List<PersonResponse> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SortOrderOption sortOrder)
+        public async Task<List<PersonResponse>> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SortOrderOption sortOrder)
         {
             if (string.IsNullOrEmpty(sortBy))
             {
@@ -251,7 +251,7 @@ namespace Services
             */
         }
 
-        public PersonResponse UpdatePerson(PersonUpdateRequest personUpdateRequest)
+        public async Task<PersonResponse> UpdatePerson(PersonUpdateRequest personUpdateRequest)
         {
             if (personUpdateRequest == null)
             {
@@ -262,7 +262,7 @@ namespace Services
 
             //PersonResponse? personResponseFromGet = GetPersonByPersonId(personUpdateRequest.PersonId);
             //Person? matchedPerson = _persons.FirstOrDefault(temp => temp.PersonId  == personUpdateRequest.PersonId);
-            Person? matchedPerson = _db.Persons.FirstOrDefault(temp => temp.PersonId  == personUpdateRequest.PersonId);
+            Person? matchedPerson = await _db.Persons.FirstOrDefaultAsync(temp => temp.PersonId  == personUpdateRequest.PersonId);
             if (matchedPerson == null)
             {
                 throw new ArgumentException("Given person id doesn't exist!");
@@ -275,7 +275,7 @@ namespace Services
             matchedPerson.DateOfBirth = personUpdateRequest.DateOfBirth;
             matchedPerson.CountryId = personUpdateRequest.CountryId;
             matchedPerson.ReceiveNewsLetters = personUpdateRequest.ReceiveNewsLetters;
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
             //return ConvertPersonToPersonResponse(matchedPerson);
             return matchedPerson.ToPersonResponse();
