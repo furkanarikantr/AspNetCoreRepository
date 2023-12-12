@@ -10,7 +10,7 @@ namespace ServiceContracts
 {
     public interface IPersonService
     {
-        Task<PersonResponse> AddPerson(PersonAddRequest personAddRequest);
+        Task<PersonResponse?> AddPerson(PersonAddRequest? personAddRequest);
         Task<PersonResponse> UpdatePerson(PersonUpdateRequest personUpdateRequest);
         Task<bool> DeletePerson(Guid? personId);
 

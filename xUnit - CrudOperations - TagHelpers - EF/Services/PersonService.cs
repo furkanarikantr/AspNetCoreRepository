@@ -35,7 +35,7 @@ namespace Services
         //    return personResponse;
         //}
 
-        public async Task<PersonResponse> AddPerson(PersonAddRequest? personAddRequest)
+        public async Task<PersonResponse?> AddPerson(PersonAddRequest? personAddRequest)
         {
             if (personAddRequest == null)
             {

@@ -1,6 +1,7 @@
 ﻿using Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Rotativa.AspNetCore;
 using ServiceContracts;
 using ServiceContracts.DTOs.CountryDto;
 using ServiceContracts.DTOs.PersonDto;
@@ -9,7 +10,8 @@ using Services;
 
 namespace CrudExample.Controllers
 {
-    [Route("persons")]
+    //[Route("persons")]
+    [Route("[controller]")]
     public class PersonsController : Controller
     {
         private readonly IPersonService _personService;
@@ -23,7 +25,7 @@ namespace CrudExample.Controllers
 
         [Route("/")]
         [Route("[action]")]
-        //[Route("index")]
+        [Route("/index")]
         public async Task<IActionResult> Index(string searchBy, string? searchString, string sortBy, SortOrderOption sortOrder = SortOrderOption.ASC)
         {
             //Search
@@ -164,6 +166,29 @@ namespace CrudExample.Controllers
 
             await _personService.DeletePerson(personResponse.PersonId);
             return RedirectToAction("Index");
+        }
+
+        [Route("[action]")]
+        public async Task<IActionResult> PersonsPDF(string searchBy, string searchString, string sortBy, SortOrderOption sortOrder = SortOrderOption.ASC)
+        {
+            //List of Persons
+            //List<PersonResponse> persons = await _personService.GetAllPerson();
+
+            List<PersonResponse> filteredPersons = await _personService.GetFilteredPersons(searchBy, searchString);
+            List<PersonResponse> sortedPersons = await _personService.GetSortedPersons(filteredPersons, sortBy, sortOrder);
+
+            //Return to view as pdf
+            return new ViewAsPdf(sortedPersons, ViewData)
+            {
+                PageMargins = new Rotativa.AspNetCore.Options.Margins()
+                {
+                    Top = 20,
+                    Right = 20,
+                    Bottom = 20,
+                    Left = 20
+                },
+                PageOrientation = Rotativa.AspNetCore.Options.Orientation.Landscape
+            };
         }
     }
 }

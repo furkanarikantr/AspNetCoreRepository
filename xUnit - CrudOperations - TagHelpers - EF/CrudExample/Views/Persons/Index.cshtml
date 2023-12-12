@@ -8,6 +8,10 @@
 
 <a asp-controller="Persons" asp-action="CreatePerson">Create Person</a>
 
+<a asp-controller="Persons" asp-action="PersonsPDF" asp-route-searchBy="@ViewBag.CurrentSearchBy" asp-route-searchString="@ViewBag.CurrentSearchString" asp-route-sortBy="@ViewBag.CurrentSortBy" asp-route-sortOrder="@ViewBag.CurrentSortOrder">Download as PDF</a>
+
+<a asp-controller="Persons" asp-action="PersonsPDF">Download as PDF with all persons</a>
+
 @* <form action="~/persons/index" method="get"> *@
 <form asp-controller="Persons" asp-action="Index" method="get">
     <div class="box flex ">
