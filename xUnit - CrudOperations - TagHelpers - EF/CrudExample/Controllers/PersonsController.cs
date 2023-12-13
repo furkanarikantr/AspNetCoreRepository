@@ -190,5 +190,18 @@ namespace CrudExample.Controllers
                 PageOrientation = Rotativa.AspNetCore.Options.Orientation.Landscape
             };
         }
+
+        [Route("[action]")]
+        public async Task<IActionResult> PersonsCSV(string searchBy, string searchString, string sortBy, SortOrderOption sortOrder = SortOrderOption.ASC)
+        {
+            //MemoryStream memoryStream = await _personService.GetPersonsCSV();
+            List<PersonResponse> filteredPersons = await _personService.GetFilteredPersons(searchBy, searchString);
+            Console.WriteLine("Filtered Persons Count: " + filteredPersons.Count);
+            List<PersonResponse> sortedPersons = await _personService.GetSortedPersons(filteredPersons, sortBy, sortOrder);
+            Console.WriteLine("Sorted Persons Count: " + sortedPersons.Count);
+            MemoryStream memoryStream = await _personService.GetPersonsCSV(sortedPersons);
+
+            return File(memoryStream, "application/octet-stream", "persons.csv");
+        }
     }
 }

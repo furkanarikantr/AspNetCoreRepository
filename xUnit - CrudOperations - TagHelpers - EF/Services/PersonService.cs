@@ -1,4 +1,5 @@
-﻿using Entities;
+﻿using CsvHelper;
+using Entities;
 using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTOs.PersonDto;
@@ -7,6 +8,7 @@ using Services.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -181,6 +183,29 @@ namespace Services
             return person.ToPersonResponse();
         }
 
+        public async Task<MemoryStream> GetPersonsCSV(List<PersonResponse> persons)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            StreamWriter streamWriter = new StreamWriter(memoryStream);
+
+            CsvWriter csvWriter = new CsvWriter(streamWriter, CultureInfo.InvariantCulture, leaveOpen: true);
+
+            csvWriter.WriteHeader<PersonResponse>();    //PersonID,PersonName,...
+            csvWriter.NextRecord();
+
+            //List<PersonResponse> persons = _db.Persons
+            //    .Include("Country")
+            //    .Select(temp => temp.ToPersonResponse()).ToList();
+
+            await csvWriter.WriteRecordsAsync(persons); //1, John, ...
+            await streamWriter.FlushAsync();            //Yazma işlemi tamamlanıp, MemoryStream güncellenir.
+
+            MemoryStream newMemoryStream = new MemoryStream(memoryStream.ToArray());    //Yeni MemoryStream'a eskisi kopyalanır.
+
+            newMemoryStream.Position = 0;   //MemoryStream'ı ilk index'ten başlatıp return edilmesini sağlar.
+            return newMemoryStream;
+        }
+
         public async Task<List<PersonResponse>> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SortOrderOption sortOrder)
         {
             if (string.IsNullOrEmpty(sortBy))
@@ -262,7 +287,7 @@ namespace Services
 
             //PersonResponse? personResponseFromGet = GetPersonByPersonId(personUpdateRequest.PersonId);
             //Person? matchedPerson = _persons.FirstOrDefault(temp => temp.PersonId  == personUpdateRequest.PersonId);
-            Person? matchedPerson = await _db.Persons.FirstOrDefaultAsync(temp => temp.PersonId  == personUpdateRequest.PersonId);
+            Person? matchedPerson = await _db.Persons.FirstOrDefaultAsync(temp => temp.PersonId == personUpdateRequest.PersonId);
             if (matchedPerson == null)
             {
                 throw new ArgumentException("Given person id doesn't exist!");

@@ -18,5 +18,8 @@ namespace ServiceContracts
         Task<PersonResponse?> GetPersonByPersonId(Guid? personId);
         Task<List<PersonResponse>> GetFilteredPersons(string? searchBy, string? searchString);
         Task<List<PersonResponse>> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SortOrderOption sortOrder);
+
+        //MemoryStream : Verileri hafızada tutmak için kullanılır. 
+        Task<MemoryStream> GetPersonsCSV(List<PersonResponse> persons);
     }
 }
