@@ -14,6 +14,9 @@
 <a asp-controller="Persons" asp-action="PersonsCSV" asp-route-searchBy="@ViewBag.CurrentSearchBy" asp-route-searchString="@ViewBag.CurrentSearchString" asp-route-sortBy="@ViewBag.CurrentSortBy" asp-route-sortOrder="@ViewBag.CurrentSortOrder">Download as CSV with Filter</a>
 <a asp-controller="Persons" asp-action="PersonsCSV">Download as CSV with all persons</a>
 
+<a asp-controller="Persons" asp-action="PersonsExcel" asp-route-searchBy="@ViewBag.CurrentSearchBy" asp-route-searchString="@ViewBag.CurrentSearchString" asp-route-sortBy="@ViewBag.CurrentSortBy" asp-route-sortOrder="@ViewBag.CurrentSortOrder">Download as Excel with Filter</a>
+<a asp-controller="Persons" asp-action="PersonsExcel">Download as Excel with all persons</a>
+
 @* <form action="~/persons/index" method="get"> *@
 <form asp-controller="Persons" asp-action="Index" method="get">
     <div class="box flex ">

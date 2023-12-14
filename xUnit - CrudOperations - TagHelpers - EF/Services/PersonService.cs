@@ -2,6 +2,7 @@
 using CsvHelper.Configuration;
 using Entities;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using ServiceContracts;
 using ServiceContracts.DTOs.PersonDto;
 using ServiceContracts.Enums;
@@ -199,11 +200,11 @@ namespace Services
             //PersonName, Email, Country, ... Not CountryId, PersonId
             csvWriter.WriteField(nameof(PersonResponse.PersonName));    //PersonName
             csvWriter.WriteField(nameof(PersonResponse.Email));    //Email
-            csvWriter.WriteField(nameof(PersonResponse.DateOfBirth));    
-            csvWriter.WriteField(nameof(PersonResponse.Age));    
+            csvWriter.WriteField(nameof(PersonResponse.DateOfBirth));
+            csvWriter.WriteField(nameof(PersonResponse.Age));
             csvWriter.WriteField(nameof(PersonResponse.Gender));
-            csvWriter.WriteField(nameof(PersonResponse.Country));    
-            csvWriter.WriteField(nameof(PersonResponse.Address));    
+            csvWriter.WriteField(nameof(PersonResponse.Country));
+            csvWriter.WriteField(nameof(PersonResponse.Address));
             csvWriter.WriteField(nameof(PersonResponse.ReceiveNewsLetters));
             csvWriter.NextRecord();
 
@@ -238,6 +239,105 @@ namespace Services
 
             newMemoryStream.Position = 0;   //MemoryStream'ı ilk index'ten başlatıp return edilmesini sağlar.
             return newMemoryStream;
+        }
+
+        public async Task<MemoryStream> GetPersonsExcel(List<PersonResponse> persons)
+        {
+            /*Old Version Excel
+                MemoryStream memoryStream = new MemoryStream();
+                ExcelPackage excelPackage = new ExcelPackage(memoryStream);
+
+                ExcelWorksheet workSheet = excelPackage.Workbook.Worksheets.Add("PersonsSheet");
+                workSheet.Cells["A1"].Value = "Person Name";
+                workSheet.Cells["B1"].Value = "Email";
+                workSheet.Cells["C1"].Value = "Date of Birth";
+                workSheet.Cells["D1"].Value = "Age";
+                workSheet.Cells["E1"].Value = "Gender";
+                workSheet.Cells["F1"].Value = "Country";
+                workSheet.Cells["G1"].Value = "Address";
+                workSheet.Cells["H1"].Value = "Receive News Letters";
+
+                ExcelRange headerCells = workSheet.Cells["A1:H1"];
+                headerCells.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                headerCells.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                headerCells.Style.Font.Bold = true;
+
+                int row = 2;
+                foreach (PersonResponse person in persons)
+                {
+                    workSheet.Cells[row, 1].Value = person.PersonName;
+                    workSheet.Cells[row, 2].Value = person.Email;
+                    if (person.DateOfBirth.HasValue)
+                        workSheet.Cells[row, 3].Value = person.DateOfBirth.Value.ToString("yyyy-MM-dd");
+                    workSheet.Cells[row, 4].Value = person.Age;
+                    workSheet.Cells[row, 5].Value = person.Gender;
+                    workSheet.Cells[row, 6].Value = person.Country;
+                    workSheet.Cells[row, 7].Value = person.Address;
+                    workSheet.Cells[row, 8].Value = person.ReceiveNewsLetters;
+
+                    row++;
+                }
+
+                workSheet.Cells[$"A1:H{row}"].AutoFitColumns();
+                await excelPackage.SaveAsync();
+
+                memoryStream.Position = 0;
+                return memoryStream;
+            */
+
+            MemoryStream memoryStream = new MemoryStream();
+            ExcelPackage excelPackage = new ExcelPackage(memoryStream);
+            ExcelWorksheet workSheet = excelPackage.Workbook.Worksheets.Add("PersonsSheet");
+
+            //Başlıkları ekle
+            var headers = typeof(PersonResponse)
+                .GetProperties()
+                .Where(p => p.Name != "PersonId" && p.Name != "CountryId")
+                .Select(p => p.Name); 
+
+            int columnIndex = 1;
+            foreach (var header in headers)
+            {
+                workSheet.Cells[1, columnIndex].Value = header;
+                columnIndex++;
+            }
+            
+            //Başlıkların tasarımlarını düzelt
+            ExcelRange headerCells = workSheet.Cells["A1:H1"];
+            headerCells.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            headerCells.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+            headerCells.Style.Font.Bold = true;
+
+            //Verileri ekle
+            for (int i = 0; i < persons.Count; i++)
+            {
+                var properties = typeof(PersonResponse)
+                    .GetProperties()
+                    .Where(p => p.Name != "PersonId" && p.Name != "CountryId");
+
+                columnIndex = 1;
+                foreach (var property in properties)
+                {
+                    if (property.Name == "DateOfBirth")
+                    {
+                        // DateOfBirth özelliği ise özel işlem yap
+                        var dateOfBirthValue = property.GetValue(persons[i]) as DateTime?;
+                        workSheet.Cells[i + 2, columnIndex].Value = dateOfBirthValue?.ToString("yyyy-MM-dd");
+                    }
+                    else
+                    {
+                        // Diğer özellikler
+                        workSheet.Cells[i + 2, columnIndex].Value = property.GetValue(persons[i]);
+                    }
+
+                    columnIndex++;
+                }
+            }
+
+            workSheet.Cells[$"A1:H{columnIndex}"].AutoFitColumns();
+            await excelPackage.SaveAsync();
+            memoryStream.Position = 0;
+            return memoryStream;
         }
 
         public async Task<List<PersonResponse>> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SortOrderOption sortOrder)

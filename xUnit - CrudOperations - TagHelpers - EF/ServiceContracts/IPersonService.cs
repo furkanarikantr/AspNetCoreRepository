@@ -21,5 +21,7 @@ namespace ServiceContracts
 
         //MemoryStream : Verileri hafızada tutmak için kullanılır. 
         Task<MemoryStream> GetPersonsCSV(List<PersonResponse> persons);
+
+        Task<MemoryStream> GetPersonsExcel(List<PersonResponse> persons);
     }
 }
