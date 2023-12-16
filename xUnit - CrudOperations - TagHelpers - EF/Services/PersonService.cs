@@ -285,16 +285,24 @@ namespace Services
                 return memoryStream;
             */
 
+            //Bellekte veri tutmak bu veriye bellekten erişmek için kullanılır. .Net ile gelir.
             MemoryStream memoryStream = new MemoryStream();
+            /*
+                    EPPlus kütüphanesini kullanarak ExcelPackage sınıfından bir Excel paketi örneği oluşturuyor. Bu örnek memoryStream
+                sayesinde bellekte çalışacak bir Excel dosyasına denk geliyor.
+            */
             ExcelPackage excelPackage = new ExcelPackage(memoryStream);
+            /*
+                    Bu satırda excelPackage içerisindeki WorkBook kullanılarak bir çalışma sayfası oluşturuluyor ve ismi belirleniyor.
+            */
             ExcelWorksheet workSheet = excelPackage.Workbook.Worksheets.Add("PersonsSheet");
 
-            //Başlıkları ekle
+            //Excel dosyamıza ekleyeceğimiz başlıkları tutuyoruz.
             var headers = typeof(PersonResponse)
                 .GetProperties()
                 .Where(p => p.Name != "PersonId" && p.Name != "CountryId")
                 .Select(p => p.Name); 
-
+            //Excel dosyasına başlıkları ekliyoruz.
             int columnIndex = 1;
             foreach (var header in headers)
             {
@@ -308,7 +316,7 @@ namespace Services
             headerCells.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
             headerCells.Style.Font.Bold = true;
 
-            //Verileri ekle
+            //Excel dosyalarına verileri ekliyoruz.
             for (int i = 0; i < persons.Count; i++)
             {
                 var properties = typeof(PersonResponse)
@@ -334,9 +342,13 @@ namespace Services
                 }
             }
 
+            //Excel dosyasındaki sütunları otomatik olarak genişletiyoruz.
             workSheet.Cells[$"A1:H{columnIndex}"].AutoFitColumns();
+            //Bu satır excelPackage içindeki eklediğmiz güncel verileri memoryStream üzerine belleğe kaydeder.
             await excelPackage.SaveAsync();
+            //Bu satır ise memoryStream pozisyonunu sıfıra alır ve yapılan güncelleşmelerin okuma ve diğer işlemlere hazırlar.
             memoryStream.Position = 0;
+
             return memoryStream;
         }
 
