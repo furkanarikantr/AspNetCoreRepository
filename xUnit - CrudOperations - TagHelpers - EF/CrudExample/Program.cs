@@ -14,11 +14,15 @@ namespace CrudExample
 
             builder.Services.AddScoped<ICountriesService, CountriesService>();
             builder.Services.AddScoped<IPersonService, PersonService>();
-            builder.Services.AddDbContext<PersonsDbContext>(options =>
+            //builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            //{
+            //    options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]);
+            //});
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]);
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
-              
+
             var app = builder.Build();
 
             if (builder.Environment.IsDevelopment())

@@ -11,16 +11,16 @@ namespace Entities
 {
     //DbContext : EntityFramework nesnesidir ve uygulama ve veritabanı arasındaki bağlantı için köprü görevi görür.
     // Nuget EntityFrameworkCore - EntityFrameworkCoreSqlServer(MsSql kullanacağımız için)
-    public class PersonsDbContext : DbContext
+    public class ApplicationDbContext : DbContext
     {
         //Db bağlantısı burada gösteriliyor. Fakat biz program.cs içerisinde yaptık. base ile options'ı oradan aldık.
-        public PersonsDbContext(DbContextOptions options) : base(options)
+        public ApplicationDbContext(DbContextOptions options) : base(options)
         {
         }
 
         //DbSet : EntityFramework'te belirli bir veritabanı tablosunu temsil eder ve veritabanındaki tabloları eşler.
-        public DbSet<Country> Countries { get; set; }
-        public DbSet<Person> Persons { get; set;}
+        public virtual DbSet<Country> Countries { get; set; }
+        public virtual DbSet<Person> Persons { get; set;}
 
         //Veritabanı modelinin nasıl oluşturulacağını belirlediğimiz yerdir. Tablolaları yapılandırmamızı sağlar.
         protected override void OnModelCreating(ModelBuilder modelBuilder)

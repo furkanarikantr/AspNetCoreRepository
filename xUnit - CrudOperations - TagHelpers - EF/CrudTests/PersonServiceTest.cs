@@ -1,4 +1,5 @@
 ﻿using Entities;
+using EntityFrameworkCoreMock;
 using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTOs.CountryDto;
@@ -20,10 +21,27 @@ namespace CrudTests
         private readonly ICountriesService _countriesService;
         private readonly ITestOutputHelper _testOutputHelper;
 
-        public PersonServiceTest(ITestOutputHelper testOutputHelper, ICountriesService countriesService)
+        public PersonServiceTest(ITestOutputHelper testOutputHelper)
         {
-            _countriesService = new CountriesService(new PersonsDbContext(new DbContextOptionsBuilder().Options));
-            _personService = new PersonService(new PersonsDbContext(new DbContextOptionsBuilder().Options), _countriesService);
+            var countriesInitialData = new List<Country>() { };
+            var personsInitialData = new List<Person>() { };
+
+            //Craete mock for DbContext
+            DbContextMock<ApplicationDbContext> dbContextMock = new DbContextMock<ApplicationDbContext>(
+              new DbContextOptionsBuilder<ApplicationDbContext>().Options
+             );
+
+            //Access Mock DbContext object
+            ApplicationDbContext dbContext = dbContextMock.Object;
+
+            //Create mocks for DbSets'
+            dbContextMock.CreateDbSetMock(temp => temp.Countries, countriesInitialData);
+            dbContextMock.CreateDbSetMock(temp => temp.Persons, personsInitialData);
+
+            //Create services based on mocked DbContext object
+            _countriesService = new CountriesService(dbContext);
+            _personService = new PersonService(dbContext, _countriesService);
+
             _testOutputHelper = testOutputHelper;
         }  
 

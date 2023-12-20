@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTOs.CountryDto;
 using Services;
+using EntityFrameworkCoreMock;
+using Moq;
 
 namespace CrudTests
 {
@@ -12,7 +14,26 @@ namespace CrudTests
 
         public CountriesServiceTest()
         {
-            _countriesService = new CountriesService(new PersonsDbContext(new DbContextOptionsBuilder<PersonsDbContext>().Options));
+            //var dbContextOptions = new PersonsDbContext(new DbContextOptionsBuilder<PersonsDbContext>().Options);
+            //_countriesService = new CountriesService(dbContextOptions);
+
+            //mock kullanım adımları
+
+            //Test aşamasında kullanılması için countries'lerin başlangıç değeri.
+            var countriesInitialData = new List<Country>() { };
+
+            //Gerçek veritabanını kullanmak yerine Entityframework kullanılarak mock nesnesi oluşturulur.
+            DbContextMock<ApplicationDbContext> dbContextMock = new DbContextMock<ApplicationDbContext>(
+              new DbContextOptionsBuilder<ApplicationDbContext>().Options
+             );
+
+            //Oluşturulan mock DbContext'in gerçek DbContext'ten DbSet değerleri taklit etmesi sağlanır.
+            dbContextMock.CreateDbSetMock(temp => temp.Countries, countriesInitialData);
+
+            //Oluşturulan mock DbContext nesnesi kullanılarak bir ApplicationDbContext nesnesi oluşturulur.
+            ApplicationDbContext dbContext = dbContextMock.Object;
+
+            _countriesService = new CountriesService(dbContext);
         }
 
         #region AddCountry
@@ -63,7 +84,6 @@ namespace CrudTests
                 CountryName = "USA"
             };
 
-            //Assert
             await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
                 //Act
@@ -125,11 +145,11 @@ namespace CrudTests
             List<CountryResponse> countries_list_from_add_country = new List<CountryResponse>();
             foreach (CountryAddRequest country_request in countries_request_list)
             {
-                countries_list_from_add_country.Add(await _countriesService.AddCountry(country_request)); 
+                countries_list_from_add_country.Add(await _countriesService.AddCountry(country_request));
             }
 
             List<CountryResponse> actualCountriesResponseList = await _countriesService.GetAllCountries();
-            foreach(CountryResponse expected_country in countries_list_from_add_country)
+            foreach (CountryResponse expected_country in countries_list_from_add_country)
             {
                 Assert.Contains(expected_country, actualCountriesResponseList);
             }
@@ -154,9 +174,9 @@ namespace CrudTests
         public async Task GetCountryByCountryId_CountryIdIsValid()
         {
             //Arrange
-            CountryAddRequest? country_add_request = new CountryAddRequest() 
-            { 
-                CountryName = "China" 
+            CountryAddRequest? country_add_request = new CountryAddRequest()
+            {
+                CountryName = "China"
             };
 
             CountryResponse country_response_from_add = await _countriesService.AddCountry(country_add_request);
