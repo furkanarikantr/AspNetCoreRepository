@@ -13,7 +13,7 @@ namespace Repositories
             _db = dbContext;
         }
 
-        public async Task<Country> Add(Country country)
+        public async Task<Country> AddCountry(Country country)
         {
             await _db.Countries.AddAsync(country);
             await _db.SaveChangesAsync();  //DbSet'ine verileri ekliyoruz.

@@ -3,6 +3,7 @@ using CsvHelper.Configuration;
 using Entities;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
+using RepositoryContracts;
 using ServiceContracts;
 using ServiceContracts.DTOs.PersonDto;
 using ServiceContracts.Enums;
@@ -21,13 +22,13 @@ namespace Services
     public class PersonService : IPersonService
     {
         //private readonly List<Person> _persons;
-        private readonly ApplicationDbContext _db;
-        private readonly ICountriesService _countriesService;
+        //private readonly ApplicationDbContext _db;
+        private readonly IPersonRepository _personRepository;
 
-        public PersonService(ApplicationDbContext personsDbContext, ICountriesService countriesService)
+        public PersonService(/*ApplicationDbContext personsDbContext,*/ IPersonRepository personRepository)
         {
-            _db = personsDbContext;
-            _countriesService = countriesService;
+            //_db = personsDbContext;
+            _personRepository = personRepository;
         }
 
         //Artık gerek kalmadı, çünkü kendimiz eklediğimiz CountryName'i ilişkisel veritabanı kullanarak ekleyebiliyoruz.
@@ -54,8 +55,9 @@ namespace Services
             //_persons.Add(person);
 
             //EntityFramework ile sql'siz ekleme.
-            await _db.Persons.AddAsync(person);
-            await _db.SaveChangesAsync();
+            //await _db.Persons.AddAsync(person);
+            //await _db.SaveChangesAsync();
+            await _personRepository.AddPerson(person);
 
             //Entityframework ile storedprocedure kullanarak sql ile ekleme.
             //_db.sp_InsertPerson(person);
@@ -78,7 +80,8 @@ namespace Services
             }
 
             //Person? matchedPerson = _persons.FirstOrDefault(temp => temp.PersonId == personId);
-            Person? matchedPerson = await _db.Persons.FirstOrDefaultAsync(temp => temp.PersonId == personId);
+            //Person? matchedPerson = await _db.Persons.FirstOrDefaultAsync(temp => temp.PersonId == personId);
+            Person? matchedPerson = await _personRepository.GetPersonByPersonID(personId.Value);
 
             if (matchedPerson == null)
             {
@@ -86,26 +89,29 @@ namespace Services
             }
 
             //_persons.Remove(matchedPerson);
-            _db.Persons.Remove(matchedPerson);
-            await _db.SaveChangesAsync();
+            //_db.Persons.Remove(matchedPerson);
+            //await _db.SaveChangesAsync();
+            await _personRepository.DeletePersonByPersonID(matchedPerson.PersonId);
 
             return true;
         }
 
         public async Task<List<PersonResponse>> GetAllPerson()
         {
-            var persons = await _db.Persons.Include("Country").ToListAsync();
+            //var persons = await _db.Persons.Include("Country").ToListAsync();
+            var persons = await _personRepository.GetAllPersons();
 
             //return _persons.Select(person => ConvertPersonToPersonResponse(person)).ToList();
             //return _db.Persons.ToList().Select(person => ConvertPersonToPersonResponse(person)).ToList();
             //return _db.sp_GetAllPersons().Select(temp => ConvertPersonToPersonResponse(temp)).ToList();
 
             //return persons.ToList().Select(person => ConvertPersonToPersonResponse(person)).ToList();
-            return persons.ToList().Select(person => person.ToPersonResponse()).ToList();
+            return persons.Select(person => person.ToPersonResponse()).ToList();
         }
 
         public async Task<List<PersonResponse>> GetFilteredPersons(string? searchBy, string? searchString)
         {
+            /*
             List<PersonResponse> allPersons = await GetAllPerson();
             List<PersonResponse> matchedPersons = allPersons;
 
@@ -151,7 +157,7 @@ namespace Services
             }
 
             return matchedPersons;
-            /* İkinci Yol, Tam Oturmadı.
+             İkinci Yol, Tam Oturmadı.
             Type type = typeof(Person);
             PropertyInfo searchByProperty = type.GetProperty(searchBy)!;
 
@@ -164,6 +170,36 @@ namespace Services
                 return GetAllPerson().Where(temp => Convert.ToInt32(temp!.GetType()!.GetProperty(searchBy)!.GetValue(this))! == Convert.ToInt32(searchString)).ToList();
             }
             */
+
+            List<Person> persons = searchBy switch
+            {
+                nameof(PersonResponse.PersonName) =>
+                 await _personRepository.GetFilteredPersons(temp =>
+                 temp.PersonName.Contains(searchString)),
+
+                nameof(PersonResponse.Email) =>
+                 await _personRepository.GetFilteredPersons(temp =>
+                 temp.Email.Contains(searchString)),
+
+                nameof(PersonResponse.DateOfBirth) =>
+                 await _personRepository.GetFilteredPersons(temp =>
+                 temp.DateOfBirth.Value.ToString("dd MMMM yyyy").Contains(searchString)),
+
+                nameof(PersonResponse.Gender) =>
+                 await _personRepository.GetFilteredPersons(temp =>
+                 temp.Gender.Contains(searchString)),
+
+                nameof(PersonResponse.CountryId) =>
+                 await _personRepository.GetFilteredPersons(temp =>
+                 temp.Country.CountryName.Contains(searchString)),
+
+                nameof(PersonResponse.Address) =>
+                await _personRepository.GetFilteredPersons(temp =>
+                temp.Address.Contains(searchString)),
+
+                _ => await _personRepository.GetAllPersons()
+            };
+            return persons.Select(temp => temp.ToPersonResponse()).ToList();
         }
 
         public async Task<PersonResponse?> GetPersonByPersonId(Guid? personId)
@@ -174,7 +210,8 @@ namespace Services
             }
 
             //Person? person = _persons.FirstOrDefault(select => select.PersonId == personId);
-            Person? person = await _db.Persons.Include("Country").FirstOrDefaultAsync(select => select.PersonId == personId);
+            //Person? person = await _db.Persons.Include("Country").FirstOrDefaultAsync(select => select.PersonId == personId);
+            Person? person = await _personRepository.GetPersonByPersonID(personId.Value);
 
             if (person == null)
             {
@@ -433,7 +470,8 @@ namespace Services
 
             //PersonResponse? personResponseFromGet = GetPersonByPersonId(personUpdateRequest.PersonId);
             //Person? matchedPerson = _persons.FirstOrDefault(temp => temp.PersonId  == personUpdateRequest.PersonId);
-            Person? matchedPerson = await _db.Persons.FirstOrDefaultAsync(temp => temp.PersonId == personUpdateRequest.PersonId);
+            //Person? matchedPerson = await _db.Persons.FirstOrDefaultAsync(temp => temp.PersonId == personUpdateRequest.PersonId);
+            Person? matchedPerson = await _personRepository.GetPersonByPersonID(personUpdateRequest.PersonId);
             if (matchedPerson == null)
             {
                 throw new ArgumentException("Given person id doesn't exist!");
@@ -446,7 +484,8 @@ namespace Services
             matchedPerson.DateOfBirth = personUpdateRequest.DateOfBirth;
             matchedPerson.CountryId = personUpdateRequest.CountryId;
             matchedPerson.ReceiveNewsLetters = personUpdateRequest.ReceiveNewsLetters;
-            await _db.SaveChangesAsync();
+            //await _db.SaveChangesAsync();
+            await _personRepository.UpdatePerson(matchedPerson);
 
             //return ConvertPersonToPersonResponse(matchedPerson);
             return matchedPerson.ToPersonResponse();

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
+using RepositoryContracts;
 using ServiceContracts;
 using ServiceContracts.DTOs.CountryDto;
 
@@ -11,9 +12,10 @@ namespace Services
     {
         //country list
         //private readonly List<Country> _countries;
-        private readonly ApplicationDbContext _db;
+        //private readonly ApplicationDbContext _db;
+        private readonly ICountriesRepository _countriesRepository;
 
-        public CountriesService(ApplicationDbContext personsDbContext /*,bool initialize = true*/)
+        public CountriesService(ICountriesRepository countriesRepository/*ApplicationDbContext personsDbContext*/ /*,bool initialize = true*/)
         {
             /*
                 _countries = new List<Country>();
@@ -33,7 +35,9 @@ namespace Services
                     });
                 }
             */
-            _db = personsDbContext;
+            //_db = personsDbContext;
+
+            _countriesRepository = countriesRepository;
         }
 
         public async Task<CountryResponse> AddCountry(CountryAddRequest? countryAddRequest)
@@ -62,7 +66,7 @@ namespace Services
             //}
 
             //if (_countries.Where(temp => temp.CountryName == countryAddRequest.CountryName).Count() > 0)
-            if (await _db.Countries.CountAsync(temp => temp.CountryName == countryAddRequest.CountryName) > 0)
+            if (await _countriesRepository.GetCountryByCountryName(countryAddRequest.CountryName) != null)
             {
                 //<throw new ArgumentException(nameof(countryAddRequest.CountryName));
                 throw new ArgumentException("Given country name already exists");
@@ -75,8 +79,9 @@ namespace Services
             country.CountryId = Guid.NewGuid();
 
             //Country nesnesini Country listesine ekliyoruz.
-            await _db.Countries.AddAsync(country);
-            await _db.SaveChangesAsync();  //DbSet'ine verileri ekliyoruz.
+            //await _db.Countries.AddAsync(country);
+            //await _db.SaveChangesAsync();  //DbSet'ine verileri ekliyoruz.
+            await _countriesRepository.AddCountry(country);
 
             return country.ToCountryResponse();
 
@@ -87,7 +92,8 @@ namespace Services
             //var countries = _db.Countries.Include("Persons").ToList();
 
             //return _countries.Select(country => country.ToCountryResponse()).ToList();
-            return await _db.Countries.Select(country => country.ToCountryResponse()).ToListAsync();
+            List<Country> countries = await _countriesRepository.GetAllCountries();
+            return countries.Select(country => country.ToCountryResponse()).ToList();
         }
 
         public async Task<CountryResponse?> GetCountryByCountryId(Guid? countryId)
@@ -95,7 +101,7 @@ namespace Services
             if (countryId == null)
                 return null;
 
-            Country? country_response_from_list = await _db.Countries.FirstOrDefaultAsync(temp => temp.CountryId == countryId);
+            Country? country_response_from_list = await _countriesRepository.GetCountryByCountryID(countryId.Value);
 
             if (country_response_from_list == null)
                 return null;
@@ -122,14 +128,13 @@ namespace Services
                 {
                     string? countryName = cellValue;
 
-                    if (_db.Countries.Where(temp => temp.CountryName == countryName).Count() == 0)
+                    if (await _countriesRepository.GetCountryByCountryName(countryName) == null)
                     {
                         Country country = new Country()
                         {
                             CountryName = countryName
                         };
-                        _db.Countries.Add(country);
-                        await _db.SaveChangesAsync();
+                        await _countriesRepository.AddCountry(country);
 
                         countriesInserted++;
                     }

@@ -36,7 +36,8 @@ namespace CrudTests
             //Oluşturulan mock DbContext nesnesi kullanılarak bir ApplicationDbContext nesnesi oluşturulur.
             ApplicationDbContext dbContext = dbContextMock.Object;
 
-            _countriesService = new CountriesService(dbContext);
+            //_countriesService = new CountriesService(dbContext);
+            _countriesService = new CountriesService(null);
             _fixture = new Fixture();
         }
 
